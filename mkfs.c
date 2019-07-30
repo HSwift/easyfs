@@ -109,17 +109,17 @@ void add_empty_block(int offset)
 	save_super_block();
 }
 
-void create_file(int idx,unsigned short mode){
+void create_file(int idx,unsigned short mode,int size){
     struct timeval tv;
     gettimeofday(&tv,NULL);
     node(idx).mode = mode;
     node(idx).uid = getuid();
-    node(idx).size = 1024;
+    node(idx).size = size;
     node(idx).ctime = tv.tv_sec;
     node(idx).atime = tv.tv_sec;
     node(idx).mtime = tv.tv_sec;
     node(idx).gid = getgid();
-    node(idx).links_count = 0;
+    node(idx).links_count = 1;
     node(idx).block[0] = get_empty_block();
     save_index_table();
 }
@@ -166,7 +166,7 @@ int init_disk(){
         s_block.free_blocks = DISK_BLOCK_OFFSET((max_group - 1) * group_size);
     }
     save_super_block();
-    create_file(0,S_IFDIR|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
+    create_file(0,S_IFDIR|S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH,1024);
 }
 
 int main(int argc,char **argv){
@@ -188,8 +188,8 @@ int main(int argc,char **argv){
     printf("[INFO] 文件大小:%d\n",size);
     fclose(fp);
 
-    if(size < 131072){
-        printf("[ERR] 文件至少大于128K\n");
+    if(size < 262144){
+        printf("[ERR] 文件至少大于256K\n");
         return -1;
     }
 

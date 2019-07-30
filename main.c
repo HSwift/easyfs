@@ -82,6 +82,7 @@ static struct fuse_operations oper = {
     .chmod      = op_chmod,
     .rename     = op_rename,
     .link       = op_link,
+    .chown      = op_chown,
 };
 
 int main(int argc, char *argv[])
@@ -106,20 +107,7 @@ int main(int argc, char *argv[])
                 strerror(errno));
         return EXIT_FAILURE;
     }
-/*
-    off_t disk_magic_offset = BOOT_SECTOR_SIZE + offsetof(struct ext4_super_block, s_magic);
-    uint16_t disk_magic;
-    if (disk_read(disk_magic_offset, sizeof(disk_magic), &disk_magic) < 0) {
-        fprintf(stderr, "Failed to read disk: %s\n",  e4f.disk);
-        return EXIT_FAILURE;
-    }
 
-    if (disk_magic != 0xEF53) {
-        fprintf(stderr, "Partition doesn't contain EXT4 filesystem\n");
-        return EXIT_FAILURE;
-    }
-*/
-	//fuse_opt_add_arg(&args, "-f -s");
     res = fuse_main(args.argc, args.argv, &oper, NULL);
 
     fuse_opt_free_args(&args);

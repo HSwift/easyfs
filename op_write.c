@@ -22,8 +22,13 @@ int op_write(const char *path,const char *buf, size_t size, off_t offset,
     int idx = fi->fh;
     size_t len;
 
-    if(MODE_TEST(node(idx).mode, S_IWUSR) == 0)
-        return -EACCES;
+    if(node(idx).uid == getuid()){
+        if(MODE_TEST(node(idx).mode, S_IWUSR) == 0)
+            return -EACCES;
+    }else{
+        if(MODE_TEST(node(idx).mode, S_IWOTH) == 0)
+            return -EACCES;
+    }
     if(size == 0)
         return 0;
 

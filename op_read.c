@@ -27,8 +27,14 @@ int op_read(const char *path, char *buf, size_t size, off_t offset,
 
     cur_inode = node(idx);
 
-    if(MODE_TEST(node(idx).mode, S_IRUSR) == 0)
-        return -EACCES;
+    if(node(idx).uid == getuid()){
+        if(MODE_TEST(node(idx).mode, S_IRUSR) == 0)
+            return -EACCES;
+    }else{
+        if(MODE_TEST(node(idx).mode, S_IROTH) == 0)
+            return -EACCES;
+    }
+
 
     if(size == 0)
         return 0;

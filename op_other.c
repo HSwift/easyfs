@@ -51,7 +51,20 @@ int op_truncate(const char *path, off_t new_size){
 int op_chmod(const char *path, mode_t mode){
     printf("[DEBUG] chmod(%s) mode(%d)\n",path,mode);
     int idx = inode_get_idx_by_path(path);
+    if(node(idx).uid != getuid())
+        return -EACCES;
     node(idx).mode = mode;
+    save_index_table();
+    return 0;
+}
+
+int op_chown(const char *path, int uid, int gid){
+    printf("[DEBUG] chown(%s) uid(%d) gid(%d)\n",path,uid,gid);
+    int idx = inode_get_idx_by_path(path);
+    if(node(idx).uid != getuid())
+        return -EACCES;
+    node(idx).uid = uid;
+    node(idx).gid = gid;
     save_index_table();
     return 0;
 }
